@@ -72,7 +72,7 @@ for p in ${FOLDERS_TO_BACKUP}"" ; do
 			then
 				echo "`date +'%Y%m%d%H%M'`: Backup waiting for lock"
 			else
-				echo "`date +'%Y%m%d%H%M'`: Deleting"
+				echo "`date +'%Y%m%d%H%M'`: Deleting" > /root/retention.log
 				eval "/usr/bin/restic forget --host $host --tag $p --keep-within "$year"y"$month"m"$day"d"$hour"h --prune"
 			fi
 			sleep 60

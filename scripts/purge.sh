@@ -78,3 +78,22 @@ for p in ${FOLDERS_TO_BACKUP}"" ; do
 			sleep 60
 		done
 done
+
+> /home/plan.json
+
+function loopOverArray(){
+         restic snapshots --json | jq -r '.?' | jq -c '.[]'| while read i; do
+           id=$(echo "$i" | jq -r '.| .short_id')
+              ctime=$(echo "$i" | jq -r '.| .time' | cut -f1 -d".")
+                  paths=$(echo "$i" | jq -r '. | .paths | join(",")')
+            hostname=$(echo $i | jq -r '.| .hostname')
+
+       printf "{\"id\":%-s, \"date\":%-s, \"path\":%-s, \"name\":%-s}," \"$id\" \"$ctime\" \"$paths\" \"$hostname\"
+
+               done
+              }
+             function parse(){
+              local res=$(loopOverArray)
+       echo "[$res]" | sed 's/\(.*\),/\1 /' >> /home/plan.json
+          }
+         parse

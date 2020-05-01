@@ -52,6 +52,7 @@ while true
 		else
 			echo "`date +'%Y%m%d%H%M'`: Deleting $p" > /root/retention.log
 	                eval "/usr/bin/restic forget --host $host --keep-within "$year"y"$month"m"$day"d"$hour"h --prune" > /root/retention.log
+			break
 		fi
 		sleep 60
 	done

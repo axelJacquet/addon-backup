@@ -70,10 +70,10 @@ for p in ${FOLDERS_TO_BACKUP}"" ; do
 							exit 1
 			elif [ `restic list locks --no-lock | wc -l` -gt 0 ]
 			then
-				echo "`date +'%Y%m%d%H%M'`: Backup waiting for lock"
+				echo "`date +'%Y%m%d%H%M'`: Backup waiting for lock" > /root/retention.log
 			else
-				echo "`date +'%Y%m%d%H%M'`: Deleting" > /root/retention.log
-				eval "/usr/bin/restic forget --host $host --tag $p --keep-within "$year"y"$month"m"$day"d"$hour"h --prune"
+				echo "`date +'%Y%m%d%H%M'`: Deleting $p" > /root/retention.log
+	                        eval "/usr/bin/restic forget --host $host --tag $p --keep-within "$year"y"$month"m"$day"d"$hour"h --prune" > /root/retention.log
 			fi
 			sleep 60
 		done

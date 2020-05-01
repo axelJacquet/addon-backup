@@ -3,6 +3,7 @@
 set -x
 set -e
 
+host=$(hostname -a)
 now=`date +%s`
 time_limit=$(($now + 7200))
 
@@ -60,19 +61,20 @@ while getopts "s:h:d:w:m:y:" o; do
 done
 shift $((OPTIND-1))
 
-
-while true
-        do
-                if [ $now -gt $timelimit  ]
-                then
-                        echo "`date +'%Y%m%d%H%M'`: Timeout. exiting "
-						exit 1
-                elif [ `restic list locks --no-lock | wc -l` -gt 0 ]
-                then
-                        echo "`date +'%Y%m%d%H%M'`: Backup waiting for lock"
-                else
-                        echo "`date +'%Y%m%d%H%M'`: Deleting"
-                        delete
-                fi
-                sleep 60
-        done
+for p in ${FOLDERS_TO_BACKUP}"" ; do
+	while true
+		do
+			if [ $now -gt $timelimit  ]
+			then
+				echo "`date +'%Y%m%d%H%M'`: Timeout. exiting "
+							exit 1
+			elif [ `restic list locks --no-lock | wc -l` -gt 0 ]
+			then
+				echo "`date +'%Y%m%d%H%M'`: Backup waiting for lock"
+			else
+				echo "`date +'%Y%m%d%H%M'`: Deleting"
+				eval "/usr/bin/restic forget --host $host --tag $p --keep-within "$year"y"$month"m"$day"d"$hour"h --prune"
+			fi
+			sleep 60
+		done
+done

@@ -42,7 +42,7 @@ shift $((OPTIND-1))
 
 while true
 	do
-		if [ $now -gt $timelimit  ]
+		if [[ $now -gt "$time_limit"  ]]
 		then
 			echo "`date +'%Y%m%d%H%M'`: Timeout. exiting "
 			exit 1

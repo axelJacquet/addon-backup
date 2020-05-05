@@ -104,6 +104,8 @@ actions:
               
               if [ ! -f "/root/retention.log" ]; then crontab -u root -l | { cat; echo "0 0 1 * * > /root/retention.log  "; } | crontab -; fi
               
+              crontab -u root -l | grep -v '/root/purge.sh'  | crontab -u root -
+              
               touch /var/log/restic.log /var/log/retention.log /root/retention.log
               
       user: root

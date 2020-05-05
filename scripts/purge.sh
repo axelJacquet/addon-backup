@@ -6,6 +6,7 @@ set -e
 host=$(hostname -a)
 now=`date +%s`
 time_limit=$(($now + 7200))
+REPAIR=0
 
 . /home/.config/swissbackup/openrc.sh
 
@@ -41,21 +42,45 @@ done
 shift $((OPTIND-1))
 
 while true
-	do
-		if [[ $now -gt "$time_limit"  ]]
-		then
-			echo "`date +'%Y%m%d%H%M'`: Timeout. exiting "
-			exit 1
-		elif [ `restic list locks --no-lock | wc -l` -gt 0 ]
-		then
-			echo "`date +'%Y%m%d%H%M'`: Backup waiting for lock" > /root/retention.log
-		else
-			echo "`date +'%Y%m%d%H%M'`: Deleting $p" > /root/retention.log
-	                eval "/usr/bin/restic forget --host $host --keep-within "$year"y"$month"m"$day"d"$hour"h --prune" > /root/retention.log
-			break
-		fi
-		sleep 60
-	done
+    do
+        now=`date +%s`
+        if [[ $now -gt "$time_limit"  ]]
+        then
+            echo "`date +'%Y%m%d%H%M'`: Timeout. exiting "
+            restic unlock
+            exit 1
+        fi
+
+        if [ $REPAIR -eq 1 ]
+        then
+        restic rebuild index
+        break
+        fi
+
+        if [ `restic list locks --no-lock | wc -l` -gt 0 ]
+        then
+            echo "`date +'%Y%m%d%H%M'`: Backup waiting for lock" >> /tmp/retention.log
+        else
+            if  eval "/usr/bin/restic forget --host $host --keep-within "$year"y"$month"m"$day"d"$hour"h --prune" >> /tmp/retention.log; then
+              break
+            else
+
+              if [ `restic list locks --no-lock | wc -l` -gt 0 ]
+              then
+                  echo "`date +'%Y%m%d%H%M'`: Command failed" >> /tmp/retention.log
+                  continue
+              fi
+              if grep "conn.ObjectOpen: Object Not Found"
+              then
+                  echo "`date +'%Y%m%d%H%M'`: REPAIR MANDATORY" >> /tmp/retention.log
+                  REPAIR=1
+                  time_limit=$(($now + 17200))
+                  continue
+              fi
+            fi
+        fi
+        sleep 60
+done
 
 
 > /home/plan.json

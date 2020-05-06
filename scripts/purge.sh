@@ -47,7 +47,6 @@ while true
         if [[ $now -gt "$time_limit"  ]]
         then
             echo "`date +'%Y%m%d%H%M'`: Timeout. exiting "
-            restic unlock
             exit 1
         fi
 

@@ -127,7 +127,15 @@ actions:
               
               chmod u+x purge.sh
               
+              curl -fsS https://raw.githubusercontent.com/axelJacquet/addon-backup/master/scripts/heal.sh --output heal.sh
+              
+              chmod u+x heal.sh
+              
               if [ -f "/var/spool/cron/crontabs/root" ]; then sed -i '/restic.lock/d' /var/spool/cron/crontabs/root; elif [ -f "/var/spool/cron/root" ]; then sed -i '/restic.lock/d' /var/spool/cron/root; else echo "first install"; fi
+              
+              crontab -u root -l | grep -v '/root/heal.sh'  | crontab -u root -
+              
+              crontab -u root -l | { cat; echo "50 1 * * WED /root/heal.sh "; } | crontab -
               
               crontab -u root -l | { cat; echo "* * * * * /usr/bin/nohup /usr/bin/flock --nonblock --conflict-exit-code 0 /run/user/restic.lock /root/retention-repo.sh -f \"${settings.path}\" -y \"${settings.year}\" -m \"${settings.month}\" -d \"${settings.day}\" -h \"${settings.hour}\" >> /var/log/first-backup.log 2>&1 "; } | crontab -
 
@@ -161,7 +169,15 @@ actions:
               
               chmod u+x purge.sh
               
+              curl -fsS https://raw.githubusercontent.com/axelJacquet/addon-backup/master/scripts/heal.sh --output heal.sh
+              
+              chmod u+x heal.sh
+              
               if [ -f "/var/spool/cron/crontabs/root" ]; then sed -i '/restic.lock/d' /var/spool/cron/crontabs/root; elif [ -f "/var/spool/cron/root" ]; then sed -i '/restic.lock/d' /var/spool/cron/root; else echo "first install"; fi
+              
+              crontab -u root -l | grep -v '/root/heal.sh'  | crontab -u root -
+              
+              crontab -u root -l | { cat; echo "50 1 * * WED /root/heal.sh "; } | crontab -
               
               crontab -u root -l | { cat; echo "* * * * * /usr/bin/nohup /usr/bin/flock --nonblock --conflict-exit-code 0 /run/user/restic.lock /root/retention-repo.sh -f \"${settings.path}\" -y \"${settings.year}\" -m \"${settings.month}\" -d \"${settings.day}\" -h \"${settings.hour}\" >> /var/log/first-backup.log 2>&1 "; } | crontab -
 

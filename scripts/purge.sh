@@ -96,7 +96,10 @@ function loopOverArray(){
                done
               }
              function parse(){
-              local res=$(loopOverArray)
-       echo "[$res]" | sed 's/\(.*\),/\1 /' >> /home/plan.json
-          }
+                  local res=$(loopOverArray)
+                  res_clean=$(echo "[$res]" | sed 's/\(.*\),/\1 /')
+                  now_date=`date +%s`
+                  myplan="{\"last_update\": \"$now_date\", \"backup_plan\":$res_clean}"
+                  echo $myplan >> /home/plan.json
+                  }
          parse

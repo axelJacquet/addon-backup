@@ -1,6 +1,6 @@
 type: update
 name: Add-on restauration
-baseUrl: https://raw.githubusercontent.com/Infomaniak/addon-backup/master/
+baseUrl: https://raw.githubusercontent.com/axelJacquet/addon-backup/master/
 
 globals:
 

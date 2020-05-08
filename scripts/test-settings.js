@@ -8,7 +8,7 @@ var nodesName = {};
 var ids = [];
 var conteneur = '';
 var file = '';
-var tamere = {};
+var nodesHostname = {};
 var lol = "start";
 if (resp.result != 0) return resp;
 
@@ -66,7 +66,7 @@ ids.forEach(function(element) {
                 var toDisplay = objectBackup["date"].replace('T', ' ') + " " + objectBackup["path"];
                 listBackups[objectBackup["name"]][objectBackup["id"]] = toDisplay
 
-                tamere[objectBackup.name] = objectBackup.name;
+                nodesHostname[objectBackup.name] = objectBackup.name;
             })
         }
 
@@ -149,7 +149,7 @@ return {
                                 "tooltip": "See our FAQ <a href='https://www.infomaniak.com/fr'>Add-on SwissBackup</a> section restoration",
                                 "name": "nodes",
                                 "hidden": false,
-                                "values": tamere,
+                                "values": nodesHostname,
                                 "columns": 2
                             },
 

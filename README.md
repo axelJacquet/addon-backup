@@ -77,7 +77,8 @@ No retention = set all parameters to 0 or 99.
 Example:
 
 You back up your filesystem with the Hourly backup policy and you choose 1 year, 2 months, 4 days, 2 hours.
-This means that every single backup will be available over a period of 1 year, 2 months, 4 days, 2 hours.
+This means that every single backup will be available over a period of 1 year, 2 months, 4 days, 2 hours since the last backup.
+Retention policy is apply every Sunday at 10:30 PM (UTC time). Your last backup is perform att 10:00 PM. 
 
 
 ## Restoration Process

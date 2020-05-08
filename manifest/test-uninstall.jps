@@ -19,7 +19,7 @@ onInstall:
             - crontab -u root -l | grep -v '/root/purge.sh'  | crontab -u root -
             - crontab -u root -l | grep -v '/root/retention.log'  | crontab -u root -
             - crontab -u root -l | grep -v '/var/log/restic.log'  | crontab -u root -
-        user: root
+       user: root
     
       - script [${settings.node}]: |
         var resp = api.dev.scripting.Eval("appstore", session, "GetApps", { 

@@ -9,15 +9,8 @@ var ids = [];
 var conteneur = '';
 var file = '';
 var nodesHostname = {};
-var lol = "start";
 if (resp.result != 0) return resp;
 
-// for (var i = 0; envInfo = resp.infos[i]; i++) {     
-//    if (envInfo.env.status == "1") {
-//        jelastic.marketplace.console.WriteLog("env is started")
-
-//   }
-//}
 
 for (var i = 0; envInfo = resp.infos[i]; i++) {
     if (envInfo.env.status == "1") {
@@ -26,7 +19,6 @@ for (var i = 0; envInfo = resp.infos[i]; i++) {
             for (var m = 0; add = node.addons[m]; m++) {
                 if (add.appTemplateId == backupTemplate) {
                     var conteneur = node.adminUrl.replace("https://", "").replace("http://", "").replace(/\..*/, "").replace("docker", "node").replace("vds", "node");
-                    jelastic.marketplace.console.WriteLog(conteneur)
                     nodesArray.push(conteneur);
                     ids.push({
                         name: conteneur.substring(conteneur.indexOf('-') + 1, conteneur.length),
@@ -47,7 +39,6 @@ local_date = 0;
 ids.forEach(function(element) {
 
 
-    jelastic.marketplace.console.WriteLog(element + "debut")
     var FileReadResponse = jelastic.environment.file.Read(element.name, params.session, params.path, params.nodeType, params.nodeGroup, element.id);
 
     if (FileReadResponse.result != 0) {
@@ -55,10 +46,8 @@ ids.forEach(function(element) {
     } else {
         file = FileReadResponse.body;
         var plan = toNative(new Yaml().load(file));
-        jelastic.marketplace.console.WriteLog(plan.last_update)
         if (plan.last_update > local_date) {
             local_date = plan.last_update;
-            jelastic.marketplace.console.WriteLog("je suis le plus recent" + plan.last_update + element)
             plan.backup_plan.forEach(function(objectBackup) {
                 if (!listBackups[objectBackup["name"]]) {
                     listBackups[objectBackup["name"]] = {};
@@ -72,9 +61,7 @@ ids.forEach(function(element) {
 
 
     }
-    jelastic.marketplace.console.WriteLog(element + "fin")
 });
-// jelastic.marketplace.console.WriteLog();
 return {
     result: 0,
     "settings": {

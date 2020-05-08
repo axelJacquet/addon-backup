@@ -1,6 +1,9 @@
 type: update
 name: Add-on backup
 
+targetNodes:
+
+  nodeGroup: '*'
 
 onUninstall:
         cmd [${targetNodes.nodeGroup}]:

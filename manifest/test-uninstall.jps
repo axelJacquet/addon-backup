@@ -22,11 +22,10 @@ onInstall:
         user: root
     
     
-    - id: "c3c375b4-83c6-434c-b8af-8ea6651e246d"
       message: Successfully Uninstalled!
       script [${settings.node}]: |
         var resp = api.dev.scripting.Eval("appstore", session, "GetApps", { 
-          targetAppid: "${env.appid}", nodeGroup: nodeGroup, search: { appstore: 1, app_id: id } 
+          targetAppid: "${env.appid}", nodeGroup: nodeGroup, search: { appstore: 1, app_id: c3c375b4-83c6-434c-b8af-8ea6651e246d } 
         });        
         resp = resp.response || resp;
         if (resp.result != 0) return resp;

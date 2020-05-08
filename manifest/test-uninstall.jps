@@ -22,7 +22,7 @@ onInstall:
         user: root
     
     
-    - id: my-addon-id
+    - id: c3c375b4-83c6-434c-b8af-8ea6651e246d
       message: Successfully Uninstalled!
       script [${settings.node}]: |
         var resp = api.dev.scripting.Eval("appstore", session, "GetApps", { 

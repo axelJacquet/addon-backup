@@ -5,7 +5,7 @@ targetNodes:
 
   nodeGroup: '*'
 
-onUninstall:
+onInstall:
         cmd [${settings.node}]:
   
         - rm -rf /usr/bin/restic /usr/bin/jq /home/.config/ /var/log/restic.log /root/purge.sh /root/user-recovery.sh   /home/plan.json

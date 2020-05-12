@@ -69,16 +69,20 @@ Hourly provides a backup of your files every hour (at the start of the hour at 1
 
 ### Backup retention
 
-You can adjust the **lifetime** of your backups.
-
-You can define the lifetime of your backups with years, months, days and hours.  
-No retention = set all parameters to 0 or 99.
+You can define how long to keep your backups (in years, months, days and hours).
+If you want to keep your backups forever set the parameters to 0
+Example:
+If you backup every hour and you define a retention policy to 1 year, 2 months, 4 days, 2 hours, then every backup performed will be available for this defined period ( =10322 backups)
+Note that the retention policy (deletion of the backups) is done once a week, namely Sunday at 10:30PM (UTC)
 
 Example:
 
 You back up your filesystem with the Hourly backup policy and you choose 1 year, 2 months, 4 days, 2 hours.
-This means that every single backup will be available over a period of 1 year, 2 months, 4 days, 2 hours since the last backup.
-Retention policy is applied every Sunday at 10:30 PM (UTC time). Your last backup is perform att 10:00 PM. 
+This means that every single backup will be available over a period of 1 year, 2 months, 4 days, 2 hours.
+
+### Requirement 
+
+You need to have at least one container lit with the add-on installed to see all your backups
 
 
 ## Restoration Process

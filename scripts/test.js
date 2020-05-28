@@ -8,19 +8,23 @@ var nodesName = {};
 var ids = [];
 var conteneur = '';
 var file = '';
-
+var nodesHostname = {};
 if (resp.result != 0) return resp;
 
+
 for (var i = 0; envInfo = resp.infos[i]; i++) {
-    for (var j = 0; node = envInfo.nodes[j]; j++) {
-        for (var m = 0; add = node.addons[m]; m++) {
-            if (add.appTemplateId == backupTemplate) {
-                var conteneur = node.adminUrl.replace("https://", "").replace("http://", "").replace(/\..*/, "").replace("docker", "node").replace("vds", "node");
-                nodesArray.push(conteneur);
-                ids.push({
-                    name: conteneur.substring(conteneur.indexOf('-') + 1, conteneur.length),
-                    id: conteneur.substring(4, conteneur.indexOf('-'))
-                });
+    if (envInfo.env.status == "1") {
+        jelastic.marketplace.console.WriteLog("env is started" + envInfo.env.domain)
+        for (var j = 0; node = envInfo.nodes[j]; j++) {
+            for (var m = 0; add = node.addons[m]; m++) {
+                if (add.appTemplateId == backupTemplate) {
+                    var conteneur = node.adminUrl.replace("https://", "").replace("http://", "").replace(/\..*/, "").replace("docker", "node").replace("vds", "node");
+                    nodesArray.push(conteneur);
+                    ids.push({
+                        name: conteneur.substring(conteneur.indexOf('-') + 1, conteneur.length),
+                        id: conteneur.substring(4, conteneur.indexOf('-'))
+                    });
+                }
             }
         }
     }
@@ -31,32 +35,33 @@ var params = {
     nodeType: "",
     nodeGroup: ""
 }
-for (var x = 0, n = ids.length; x < n; x++) {
-
-    nodesName[nodesArray[x]] = nodesArray[x];
-
-}
-
-
-
-
+local_date = 0;
 ids.forEach(function(element) {
+
+
     var FileReadResponse = jelastic.environment.file.Read(element.name, params.session, params.path, params.nodeType, params.nodeGroup, element.id);
+
     if (FileReadResponse.result != 0) {
         delete nodesName['node'.concat('', element.id + '-').concat('', element.name)];
     } else {
         file = FileReadResponse.body;
-        var array = toNative(new Yaml().load(file));
-        array.forEach(function(objectBackup) {
-            if (!listBackups[objectBackup["name"]]) {
-                listBackups[objectBackup["name"]] = {};
-            }
-            var toDisplay = objectBackup["date"].replace('T',' ') + " " + objectBackup["path"] + " " + objectBackup["size"];
-            listBackups[objectBackup["name"]][objectBackup["id"]] = toDisplay
-        })
+        var plan = toNative(new Yaml().load(file));
+        if (plan.last_update > local_date) {
+            local_date = plan.last_update;
+            plan.backup_plan.forEach(function(objectBackup) {
+                if (!listBackups[objectBackup["name"]]) {
+                    listBackups[objectBackup["name"]] = {};
+                }
+                var toDisplay = objectBackup["date"].replace('T', ' ') + " " + objectBackup["path"] + " " + objectBackup["size"];
+                listBackups[objectBackup["name"]][objectBackup["id"]] = toDisplay
+
+                nodesHostname[objectBackup.name] = objectBackup.name;
+            })
+        }
+
+
     }
 });
-
 return {
     result: 0,
     "settings": {
@@ -101,7 +106,7 @@ return {
                     "type": "radio-fieldset",
                     "values": {
                         "restauration": "Restore your data",
-                        "backup": "Back up your data"
+                        "backup": "Backup your data"
                     },
                     "default": "backup",
                     "showIf": {
@@ -128,10 +133,10 @@ return {
                             {
                                 "type": "list",
                                 "caption": "Display backups for",
-                                "tooltip": "See our FAQ <a href='https://www.infomaniak.com/fr'>Add-on SwissBackup</a> section restoration",
+                                "tooltip": "See our FAQ <a target='_blank' href='https://faq.infomaniak.com/2420'>Add-on SwissBackup</a> section restoration",
                                 "name": "nodes",
                                 "hidden": false,
-                                "values": nodesName,
+                                "values": nodesHostname,
                                 "columns": 2
                             },
 
@@ -262,7 +267,7 @@ return {
                                     "full": [{
                                         "type": "displayfield",
                                         "cls": "x-item-disabled",
-                                        "markup": "Some system files will be excluded. See our FAQ <a target='_blank' href='https://www.infomaniak.com/fr'>Add-on SwissBackup</a> for more detail.",
+                                        "markup": "Some system files will be excluded. See our FAQ <a target='_blank' href='https://faq.infomaniak.com/2420'>Add-on SwissBackup</a> for more detail.",
                                         "name": "info",
                                         "hidden": false
                                     }],
@@ -288,7 +293,7 @@ return {
                                 "defaultPadding": 0,
                                 "defaultFlex": 0,
                                 "caption": "Retention period",
-                                "tooltip": "See our FAQ for more details",
+                                "tooltip": "See our FAQ <a target='_blank' href='https://faq.infomaniak.com/2420'>Add-on SwissBackup</a> section backup retention",
                                 "hideLabel": false,
                                 "type": "compositefield",
                                 "name": "compositefield",
@@ -344,24 +349,6 @@ return {
                                         "default": "0",
                                         "required": "true",
                                         "hidden": false
-                                    },
-
-
-                                    {
-                                        "type": "displayfield",
-                                        "height": 5,
-                                        "hideLabel": true,
-                                        "markup": "Hours"
-                                    },
-                                    {
-                                        "width": 37,
-                                        "name": "hour",
-                                        "regex": "^[0-9]$|^[0-9][0-99]$",
-                                        "regexText": "0-99",
-                                        "type": "string",
-                                        "default": "0",
-                                        "required": "true",
-                                        "hidden": false
                                     }
 
                                 ]
@@ -370,7 +357,7 @@ return {
                                 "type": "list",
                                 "name": "sauvegarde",
                                 "caption": "Backup frequency",
-                                "tooltip": "See our FAQ <a target='_blank' href='https://www.infomaniak.com/fr'>Add-on SwissBackup</a> section back up frequency",
+                                "tooltip": "See our FAQ <a target='_blank' href='https://faq.infomaniak.com/2420'>Add-on SwissBackup</a> section backup frequency",
                                 "values": {
                                     "daily": "Daily",
                                     "hourly": "Hourly"
